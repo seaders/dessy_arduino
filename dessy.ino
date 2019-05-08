@@ -11,8 +11,17 @@ const char* password = "zzzz";
 
 ESP8266WebServer server(80);
 
-String web_on_html = "<h1>SONOFF switch is ON</h1><p><a href=\"on\"><button>ON</button></a>&nbsp;<a href=\"off\"><button>OFF</button></a></p>";
-String web_off_html = "<h1>SONOFF switch is OFF</h1><p><a href=\"on\"><button>ON</button></a>&nbsp;<a href=\"off\"><button>OFF</button></a></p>";
+String secret_prefix = "REPLACE_THIS";
+
+String pre = "<script type=\"text/javascript\">"
+      "function gotoPrefixed(onoff) {"
+          "window.location = document.getElementById('prefix').value + onoff;"
+      "}"
+  "</script>"
+  "<input type=\"text\" id=\"prefix\" name=\"prefix\">";
+
+String web_on_html = pre + "<h1>SONOFF switch is OFF</h1><p><a onclick=\"gotoPrefixed('on')\"><button>ON</button></a>&nbsp;<a onclick=\"gotoPrefixed('off')\"><button>OFF</button></a></p>";
+String web_off_html = pre + "<h1>SONOFF switch is ON</h1><p><a onclick=\"gotoPrefixed('on')\"><button>ON</button></a>&nbsp;<a onclick=\"gotoPrefixed('off')\"><button>OFF</button></a></p>";
 
 int gpio_13_led = 13;
 int gpio_12_relay = 12;
@@ -60,14 +69,14 @@ void setup(void){
     }
   });
 
-  server.on("/on", [](){
+  server.on("/" + secret_prefix + "on", [](){
     server.send(200, "text/html", web_on_html);
     digitalWrite(gpio_13_led, LOW);
     digitalWrite(gpio_12_relay, HIGH);
     delay(1000);
   });
 
-  server.on("/off", [](){
+  server.on("/" + secret_prefix + "off", [](){
     server.send(200, "text/html", web_off_html);
     digitalWrite(gpio_13_led, HIGH);
     digitalWrite(gpio_12_relay, LOW);
