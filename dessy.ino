@@ -20,8 +20,15 @@ String pre = "<script type=\"text/javascript\">"
   "</script>"
   "<input type=\"text\" id=\"prefix\" name=\"prefix\">";
 
-String web_on_html = pre + "<h1>SONOFF switch is OFF</h1><p><a onclick=\"gotoPrefixed('on')\"><button>ON</button></a>&nbsp;<a onclick=\"gotoPrefixed('off')\"><button>OFF</button></a></p>";
-String web_off_html = pre + "<h1>SONOFF switch is ON</h1><p><a onclick=\"gotoPrefixed('on')\"><button>ON</button></a>&nbsp;<a onclick=\"gotoPrefixed('off')\"><button>OFF</button></a></p>";
+String buttons = "<p>" +
+    "<button onclick=\"gotoPrefixed('on')\">ON</button> &nbsp; " +
+    "<button onclick=\"gotoPrefixed('off')\">OFF</button>" +
+    "<button onclick=\"gotoPrefixed('third')\">THIRD BUTTON</button>" +
+  "</p>";
+
+String web_on_html = pre + "<h1>SONOFF switch is OFF</h1>" + buttons;
+String web_off_html = pre + "<h1>SONOFF switch is ON</h1>" + buttons
+String web_third_html = pre + "<h1>SONOFF switch is THIRD</h1>" + buttons
 
 int gpio_13_led = 13;
 int gpio_12_relay = 12;
@@ -78,6 +85,13 @@ void setup(void){
 
   server.on("/" + secret_prefix + "off", [](){
     server.send(200, "text/html", web_off_html);
+    digitalWrite(gpio_13_led, HIGH);
+    digitalWrite(gpio_12_relay, LOW);
+    delay(1000);
+  });
+
+  server.on("/" + secret_prefix + "third", [](){
+    server.send(200, "text/html", web_third_html);
     digitalWrite(gpio_13_led, HIGH);
     digitalWrite(gpio_12_relay, LOW);
     delay(1000);
